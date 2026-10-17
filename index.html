@@ -1,79 +1,127 @@
 
-<label for="speechLanguage">Choose language</label>
-<select id="speechLanguage">
-  <option value="en-US">English</option>
-  <option value="ta-IN">தமிழ் (Tamil)</option>
-  <option value="hi-IN">हिन्दी (Hindi)</option>
-  <option value="te-IN">తెలుగు (Telugu)</option>
-  <option value="ml-IN">മലയാളം (Malayalam)</option>
-  <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
-  <option value="fr-FR">Français (French)</option>
-  <option value="es-ES">Español (Spanish)</option>
-  <option value="de-DE">Deutsch (German)</option>
-  <option value="ja-JP">日本語 (Japanese)</option>
-  <option value="zh-CN">中文 (Chinese)</option>
+<label for="languageSelect">Choose your language</label>
+<select id="languageSelect">
+  <option value="">Loading available languages...</option>
 </select>
 
-<label for="speechMessage">Your message</label>
-<textarea id="speechMessage"
-  placeholder="Type your message here"></textarea>
+<label for="messageInput">Type your message</label>
+<textarea id="messageInput" placeholder="Type here..."></textarea>
 
-<button type="button" id="speakMessage">🔊 Speak</button>
-<button type="button" id="stopSpeech">⏹ Stop</button>
-
-<p id="speechStatus" role="status" aria-live="polite"></p>
+<button type="button" id="speakButton">🔊 Speak</button>
+<p id="languageStatus" role="status" aria-live="polite"></p>
 
 <script>
-const languageSelect = document.getElementById("speechLanguage");
-const messageInput = document.getElementById("speechMessage");
-const status = document.getElementById("speechStatus");
+const languageSelect = document.getElementById("languageSelect");
+const messageInput = document.getElementById("messageInput");
+const languageStatus = document.getElementById("languageStatus");
 
-document.getElementById("speakMessage").addEventListener("click", () => {
-  const message = messageInput.value.trim();
+let availableVoices = [];
 
-  if (!message) {
-    status.textContent = "Please type a message first.";
+function loadLanguages() {
+  if (!("speechSynthesis" in window)) {
+    languageSelect.innerHTML =
+      '<option value="">Speech is not supported</option>';
+    languageStatus.textContent =
+      "Your browser does not support speech synthesis.";
     return;
   }
 
-  if (!("speechSynthesis" in window)) {
-    status.textContent = "Speech is not supported in this browser.";
+  availableVoices = window.speechSynthesis.getVoices();
+
+  const previousLanguage = languageSelect.value;
+  languageSelect.innerHTML = "";
+
+  if (availableVoices.length === 0) {
+    languageSelect.add(new Option(
+      "No voices found yet — try refreshing", ""
+    ));
+    languageStatus.textContent =
+      "Browser voices are not available yet.";
+    return;
+  }
+
+  const languages = [...new Set(
+    availableVoices.map(voice => voice.lang).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  languages.forEach(lang => {
+    const count = availableVoices.filter(
+      voice => voice.lang === lang
+    ).length;
+
+    languageSelect.add(new Option(
+      `${lang} (${count} voice${count > 1 ? "s" : ""})`,
+      lang
+    ));
+  });
+
+  if (languages.includes(previousLanguage)) {
+    languageSelect.value = previousLanguage;
+  } else {
+    const preferred = languages.find(
+      lang => lang.toLowerCase() === "ta-in"
+    ) || languages.find(
+      lang => lang.toLowerCase() === "en-in"
+    ) || languages.find(
+      lang => lang.toLowerCase().startsWith("en")
+    ) || languages[0];
+
+    languageSelect.value = preferred;
+  }
+
+  languageStatus.textContent =
+    `${languages.length} language options found on this device.`;
+}
+
+if ("speechSynthesis" in window) {
+  loadLanguages();
+  window.speechSynthesis.addEventListener(
+    "voiceschanged", loadLanguages
+  );
+}
+
+document.getElementById("speakButton").addEventListener("click", () => {
+  const message = messageInput.value.trim();
+  const lang = languageSelect.value;
+
+  if (!message) {
+    languageStatus.textContent = "First type a message.";
+    return;
+  }
+
+  if (!lang) {
+    languageStatus.textContent =
+      "No speech language is available on this device.";
+    return;
+  }
+
+  const voice = availableVoices.find(v => v.lang === lang);
+
+  if (!voice) {
+    languageStatus.textContent =
+      "A voice for this language is not available.";
     return;
   }
 
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(message);
-  utterance.lang = languageSelect.value;
-
-  const voices = window.speechSynthesis.getVoices();
-  const matchingVoice = voices.find(
-    voice => voice.lang.toLowerCase() ===
-      languageSelect.value.toLowerCase()
-  );
-
-  if (matchingVoice) {
-    utterance.voice = matchingVoice;
-  }
+  utterance.voice = voice;
+  utterance.lang = voice.lang;
 
   utterance.onstart = () => {
-    status.textContent = "Speaking...";
+    languageStatus.textContent = "Speaking...";
   };
 
   utterance.onend = () => {
-    status.textContent = "Finished speaking.";
+    languageStatus.textContent = "Finished speaking.";
   };
 
   utterance.onerror = () => {
-    status.textContent =
-      "Speech failed. Check browser voice and language support.";
+    languageStatus.textContent =
+      "Speech failed. Please try another available voice.";
   };
 
   window.speechSynthesis.speak(utterance);
-});
-
-document.getElementById("stopSpeech").addEventListener("click", () => {
-  window.speechSynthesis.cancel();
-  status.textContent = "Speech stopped.";
 });
 </script>
