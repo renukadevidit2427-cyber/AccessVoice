@@ -1,127 +1,353 @@
 
-<label for="languageSelect">Choose your language</label>
-<select id="languageSelect">
-  <option value="">Loading available languages...</option>
-</select>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#183b75">
+<title>AccessVoice - Accessible Communication</title>
+<style>
+:root{--blue:#2859d8;--dark:#173361;--bg:#f3f6fc;--line:#dce4f2;--muted:#63718a}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:#192640;line-height:1.55}
+button,select,textarea{font:inherit}
+button,select{cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8eb0ff;outline-offset:2px}
+header{background:white;border-bottom:1px solid var(--line);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-size:25px;font-weight:850;color:var(--blue)}
+.logo span{color:var(--dark)}
+main{max-width:1050px;width:94%;margin:35px auto}
+.hero{text-align:center;margin-bottom:28px}
+.hero h1{font-size:clamp(32px,5vw,48px);line-height:1.15;margin:14px 0}
+.hero p,.muted{color:var(--muted)}
+.tag{display:inline-block;background:#e4ebff;color:var(--dark);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.layout{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;align-items:start}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:23px;min-width:0;box-shadow:0 8px 25px #1833610c}
+h2{font-size:21px;margin:0 0 6px}
+.muted{font-size:14px;margin:0 0 16px}
+label{display:block;font-weight:700;margin:14px 0 7px}
+select,textarea{width:100%;padding:12px;border:1px solid #cbd6e8;border-radius:10px;background:white;color:#192640}
+textarea{min-height:140px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.quick{background:#f7f9ff;border:1px solid var(--line);border-radius:12px;padding:13px 10px;text-align:left;min-height:75px;font-weight:650}
+.quick span{display:block;font-size:23px}
+.quick:hover{border-color:var(--blue)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:700;min-height:44px}
+.primary{background:var(--blue);color:white}
+.secondary{background:#e9efff;color:var(--dark)}
+.outline{background:white;border:1px solid var(--line);color:#192640}
+.danger{background:#fff0ee;color:#a52b21}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.status{font-size:14px;color:var(--muted);overflow-wrap:anywhere;min-height:22px}
+.error{color:#b42318}.success{color:#147847}
+.saved{margin-top:20px}
+.saved-item{border-top:1px solid var(--line);padding:12px 0;overflow-wrap:anywhere}
+.saved-item p{margin:0 0 8px}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+@media(max-width:720px){header{padding:15px 4%}.layout{grid-template-columns:1fr}main{margin:23px auto}.card{padding:18px}.hero h1{font-size:35px}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">✦ Access<span>Voice</span></div>
+    <div class="muted" style="margin:0">Communication for everyone</div>
+  </div>
+  <span aria-hidden="true">🌍</span>
+</header>
 
-<label for="messageInput">Type your message</label>
-<textarea id="messageInput" placeholder="Type here..."></textarea>
+<main>
+  <section class="hero">
+    <span class="tag">ACCESSIBILITY · INDEPENDENCE · CONNECTION</span>
+    <h1>Your thoughts.<br>Your voice.</h1>
+    <p>Choose a language, express your needs, speak messages and save them for later.</p>
+  </section>
 
-<button type="button" id="speakButton">🔊 Speak</button>
-<p id="languageStatus" role="status" aria-live="polite"></p>
+  <div class="layout">
+    <section class="card">
+      <h2>🗣️ Speak your message</h2>
+      <p class="muted">Select an available voice on your device.</p>
+
+      <label for="language">Language / voice</label>
+      <select id="language"><option value="">Loading voices…</option></select>
+      <p class="muted" id="voiceInfo" aria-live="polite">Loading available voices…</p>
+
+      <label for="message">Your message</label>
+      <textarea id="message" maxlength="3000" placeholder="Type your message here…"></textarea>
+
+      <div class="actions">
+        <button class="btn primary" id="speak" type="button">🔊 Speak</button>
+        <button class="btn secondary" id="stop" type="button">⏹ Stop</button>
+        <button class="btn outline" id="clear" type="button">Clear</button>
+        <button class="btn outline" id="save" type="button">💾 Save</button>
+      </div>
+      <p id="speechStatus" class="status" role="status" aria-live="polite">Ready.</p>
+    </section>
+
+    <section class="card">
+      <h2>💙 Quick messages</h2>
+      <p class="muted">Choose English, Tamil or Hindi messages.</p>
+      <label for="quickLanguage">Quick message language</label>
+      <select id="quickLanguage">
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+      <div class="grid" id="quickGrid" style="margin-top:12px">
+        <button class="quick" data-key="water" type="button"><span>💧</span>I need water</button>
+        <button class="quick" data-key="food" type="button"><span>🍎</span>I need food</button>
+        <button class="quick" data-key="help" type="button"><span>🤝</span>Please help me</button>
+        <button class="quick" data-key="well" type="button"><span>💙</span>I feel unwell</button>
+        <button class="quick" data-key="yes" type="button"><span>✅</span>Yes</button>
+        <button class="quick" data-key="no" type="button"><span>❌</span>No</button>
+        <button class="quick" data-key="pain" type="button"><span>🩹</span>I feel pain</button>
+        <button class="quick" data-key="thanks" type="button"><span>🙏</span>Thank you</button>
+      </div>
+      <p class="status" id="quickStatus" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="card saved" style="margin-top:18px">
+    <h2>📚 Saved messages</h2>
+    <p class="muted">Messages stored by your Flask backend.</p>
+    <button class="btn secondary" id="refresh" type="button">↻ Refresh messages</button>
+    <p id="savedStatus" class="status" role="status" aria-live="polite"></p>
+    <div id="savedMessages"></div>
+  </section>
+</main>
+
+<footer>AccessVoice · Accessible communication for everyone</footer>
 
 <script>
-const languageSelect = document.getElementById("languageSelect");
-const messageInput = document.getElementById("messageInput");
-const languageStatus = document.getElementById("languageStatus");
+"use strict";
 
-let availableVoices = [];
+const $ = id => document.getElementById(id);
+const language = $("language");
+const message = $("message");
+const speechStatus = $("speechStatus");
+const savedStatus = $("savedStatus");
+const savedMessages = $("savedMessages");
 
-function loadLanguages() {
+let voices = [];
+
+const messages = {
+  en: {
+    water:"I need water.", food:"I need food.",
+    help:"Please help me.", well:"I am not feeling well.",
+    yes:"Yes.", no:"No.", pain:"I am feeling pain.",
+    thanks:"Thank you."
+  },
+  ta: {
+    water:"எனக்கு தண்ணீர் வேண்டும்.", food:"எனக்கு உணவு வேண்டும்.",
+    help:"தயவுசெய்து எனக்கு உதவுங்கள்.", well:"எனக்கு உடல்நிலை சரியில்லை.",
+    yes:"ஆம்.", no:"இல்லை.", pain:"எனக்கு வலிக்கிறது.",
+    thanks:"நன்றி."
+  },
+  hi: {
+    water:"मुझे पानी चाहिए।", food:"मुझे खाना चाहिए।",
+    help:"कृपया मेरी मदद करें।", well:"मेरी तबीयत ठीक नहीं है।",
+    yes:"हाँ।", no:"नहीं।", pain:"मुझे दर्द हो रहा है।",
+    thanks:"धन्यवाद।"
+  }
+};
+
+function status(el, text, type="") {
+  el.textContent = text;
+  el.className = "status" + (type ? " " + type : "");
+}
+
+function loadVoices() {
   if (!("speechSynthesis" in window)) {
-    languageSelect.innerHTML =
-      '<option value="">Speech is not supported</option>';
-    languageStatus.textContent =
-      "Your browser does not support speech synthesis.";
+    language.innerHTML = "";
+    language.add(new Option("Speech unavailable", ""));
+    $("speak").disabled = true;
+    $("stop").disabled = true;
+    $("voiceInfo").textContent = "This browser does not support speech synthesis.";
     return;
   }
 
-  availableVoices = window.speechSynthesis.getVoices();
+  const previous = language.value;
+  voices = window.speechSynthesis.getVoices();
+  language.replaceChildren();
 
-  const previousLanguage = languageSelect.value;
-  languageSelect.innerHTML = "";
-
-  if (availableVoices.length === 0) {
-    languageSelect.add(new Option(
-      "No voices found yet — try refreshing", ""
-    ));
-    languageStatus.textContent =
-      "Browser voices are not available yet.";
+  if (!voices.length) {
+    language.add(new Option("No voices loaded yet", ""));
+    $("voiceInfo").textContent =
+      "No voices found. Try refreshing or checking your device speech settings.";
     return;
   }
 
-  const languages = [...new Set(
-    availableVoices.map(voice => voice.lang).filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b));
-
-  languages.forEach(lang => {
-    const count = availableVoices.filter(
-      voice => voice.lang === lang
-    ).length;
-
-    languageSelect.add(new Option(
-      `${lang} (${count} voice${count > 1 ? "s" : ""})`,
-      lang
-    ));
+  voices.forEach((voice, index) => {
+    const option = new Option(`${voice.name} (${voice.lang})`, String(index));
+    language.add(option);
   });
 
-  if (languages.includes(previousLanguage)) {
-    languageSelect.value = previousLanguage;
-  } else {
-    const preferred = languages.find(
-      lang => lang.toLowerCase() === "ta-in"
-    ) || languages.find(
-      lang => lang.toLowerCase() === "en-in"
-    ) || languages.find(
-      lang => lang.toLowerCase().startsWith("en")
-    ) || languages[0];
+  let choice = voices.findIndex(v => v.lang.toLowerCase() === "ta-in");
+  if (choice < 0) choice = voices.findIndex(v => v.lang.toLowerCase() === "hi-in");
+  if (choice < 0) choice = voices.findIndex(v => v.lang.toLowerCase().startsWith("en"));
+  if (choice < 0) choice = 0;
 
-    languageSelect.value = preferred;
-  }
+  const oldIndex = Number(previous);
+  language.value = previous !== "" && voices[oldIndex] ? previous : String(choice);
+  $("voiceInfo").textContent =
+    `${voices.length} voice options found on this device.`;
+}
 
-  languageStatus.textContent =
-    `${languages.length} language options found on this device.`;
+function selectedVoice() {
+  const index = Number(language.value);
+  return Number.isInteger(index) ? voices[index] || null : null;
 }
 
 if ("speechSynthesis" in window) {
-  loadLanguages();
-  window.speechSynthesis.addEventListener(
-    "voiceschanged", loadLanguages
-  );
+  loadVoices();
+  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
 }
 
-document.getElementById("speakButton").addEventListener("click", () => {
-  const message = messageInput.value.trim();
-  const lang = languageSelect.value;
+$("speak").addEventListener("click", () => {
+  const text = message.value.trim();
+  const voice = selectedVoice();
 
-  if (!message) {
-    languageStatus.textContent = "First type a message.";
+  if (!text) {
+    status(speechStatus, "Type or select a message first.", "error");
+    message.focus();
     return;
   }
-
-  if (!lang) {
-    languageStatus.textContent =
-      "No speech language is available on this device.";
-    return;
-  }
-
-  const voice = availableVoices.find(v => v.lang === lang);
-
-  if (!voice) {
-    languageStatus.textContent =
-      "A voice for this language is not available.";
+  if (!("speechSynthesis" in window) || !voice) {
+    status(speechStatus, "No speech voice is available. Check your device settings.", "error");
     return;
   }
 
   window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(message);
+  const utterance = new SpeechSynthesisUtterance(text);
   utterance.voice = voice;
   utterance.lang = voice.lang;
-
-  utterance.onstart = () => {
-    languageStatus.textContent = "Speaking...";
-  };
-
-  utterance.onend = () => {
-    languageStatus.textContent = "Finished speaking.";
-  };
-
-  utterance.onerror = () => {
-    languageStatus.textContent =
-      "Speech failed. Please try another available voice.";
-  };
-
+  utterance.onstart = () => status(speechStatus, "Speaking…");
+  utterance.onend = () => status(speechStatus, "Finished speaking.", "success");
+  utterance.onerror = () => status(speechStatus, "Speech failed. Try another voice.", "error");
   window.speechSynthesis.speak(utterance);
 });
+
+$("stop").addEventListener("click", () => {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  status(speechStatus, "Speech stopped.");
+});
+
+$("clear").addEventListener("click", () => {
+  message.value = "";
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  status(speechStatus, "Message cleared.");
+  message.focus();
+});
+
+$("quickGrid").addEventListener("click", event => {
+  const button = event.target.closest("button[data-key]");
+  if (!button) return;
+  const lang = $("quickLanguage").value;
+  message.value = messages[lang][button.dataset.key] || "";
+  status($("quickStatus"), "Message selected. Press Speak to hear it.");
+  message.focus();
+});
+
+/* Existing Flask API endpoints */
+async function api(url, options={}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...(options.body ? {"Content-Type":"application/json"} : {}),
+      ...(options.headers || {})
+    }
+  });
+
+  if (!response.ok) throw new Error(`Server error ${response.status}`);
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+$("save").addEventListener("click", async () => {
+  const text = message.value.trim();
+  if (!text) {
+    status(savedStatus, "Enter a message before saving.", "error");
+    return;
+  }
+
+  $("save").disabled = true;
+  try {
+    await api("/api/message", {
+      method:"POST",
+      body:JSON.stringify({message:text})
+    });
+    status(savedStatus, "Message saved.", "success");
+    await refreshMessages();
+  } catch (error) {
+    status(savedStatus, `Save failed: ${error.message}. Check app.py response format.`, "error");
+  } finally {
+    $("save").disabled = false;
+  }
+});
+
+async function refreshMessages() {
+  status(savedStatus, "Loading messages…");
+  try {
+    const result = await api("/api/messages");
+    const list = Array.isArray(result) ? result : result.messages;
+
+    if (!Array.isArray(list)) throw new Error("Unexpected API response format");
+
+    savedMessages.replaceChildren();
+
+    list.forEach(item => {
+      const id = item.id ?? item.message_id;
+      const text = item.message ?? item.text ?? item.content ?? "";
+      const row = document.createElement("div");
+      row.className = "saved-item";
+
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      row.append(paragraph);
+
+      const use = document.createElement("button");
+      use.type = "button";
+      use.className = "btn secondary";
+      use.textContent = "Use message";
+      use.addEventListener("click", () => {
+        message.value = text;
+        message.focus();
+      });
+      row.append(use);
+
+      if (id !== undefined && id !== null) {
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn danger";
+        del.style.marginLeft = "8px";
+        del.textContent = "Delete";
+        del.addEventListener("click", async () => {
+          if (!confirm("Delete this saved message?")) return;
+          del.disabled = true;
+          try {
+            await api(`/api/messages/${encodeURIComponent(id)}`, {method:"DELETE"});
+            status(savedStatus, "Message deleted.", "success");
+            await refreshMessages();
+          } catch (error) {
+            del.disabled = false;
+            status(savedStatus, `Delete failed: ${error.message}`, "error");
+          }
+        });
+        row.append(del);
+      }
+
+      savedMessages.append(row);
+    });
+
+    status(savedStatus, `${list.length} saved message(s).`, "success");
+  } catch (error) {
+    status(savedStatus, `Could not load messages: ${error.message}`, "error");
+  }
+}
+
+$("refresh").addEventListener("click", refreshMessages);
+refreshMessages();
 </script>
+</body>
+</html>
