@@ -1,135 +1,591 @@
 
-from flask import Flask, request, jsonify, send_file
-import sqlite3
-app = Flask(__name__)
-DATABASE = "accessvoice.db"
-# Connect to the SQLite database
-def get_db_connection():
-    connection = sqlite3.connect(DATABASE)
-    connection.row_factory = sqlite3.Row
-    return connection
-# Create the messages table
-def create_table():
-    connection = get_db_connection()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccessVoice</title>
 
-    connection.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            message TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+<style>
+* { box-sizing: border-box; }
 
-    connection.commit()
-    connection.close()
+body {
+    margin: 0;
+    padding: 20px;
+    background: #eef5ff;
+    color: #172033;
+    font-family: Arial, sans-serif;
+}
 
+.container {
+    max-width: 940px;
+    margin: auto;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px #0002;
+}
 
-# Display the website
-@app.route("/")
-def home():
-    return send_file("index.html")
+h1 {
+    text-align: center;
+    color: #155e9b;
+    font-size: 38px;
+}
 
+h2 { color: #155e9b; margin-top: 26px; }
 
-# Check whether the backend is running
-@app.route("/api/health", methods=["GET"])
-def health():
-    return jsonify({
-        "status": "success",
-        "message": "AccessVoice backend is running!"
-    })
+select, textarea, input, button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    border-radius: 9px;
+    font-size: 16px;
+}
 
+select, textarea, input {
+    border: 1px solid #bbb;
+    background: white;
+    color: #172033;
+}
 
-# Save a new message
-@app.route("/api/message", methods=["POST"])
-def receive_message():
-    data = request.get_json(silent=True) or {}
-    message = data.get("message", "")
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
 
-    if not isinstance(message, str):
-        return jsonify({
-            "status": "error",
-            "message": "Message must be text."
-        }), 400
+button {
+    border: none;
+    background: #1976c9;
+    color: white;
+    cursor: pointer;
+}
 
-    message = message.strip()
+button:hover { opacity: .88; }
 
-    if not message:
-        return jsonify({
-            "status": "error",
-            "message": "Please enter a message."
-        }), 400
+.message {
+    margin: 20px 0;
+    padding: 22px;
+    min-height: 85px;
+    background: #e0f2fe;
+    color: #075985;
+    border-radius: 12px;
+    font-size: 24px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
 
-    if len(message) > 500:
-        return jsonify({
-            "status": "error",
-            "message": "Message must be 500 characters or less."
-        }), 400
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
 
-    connection = get_db_connection()
+.green { background: #16834a; }
+.purple { background: #7048b8; }
+.red { background: #dc3545; }
+.grey { background: #555; }
 
-    connection.execute(
-        "INSERT INTO messages (message) VALUES (?)",
-        (message,)
-    )
+#status {
+    margin-top: 20px;
+    text-align: center;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
 
-    connection.commit()
-    connection.close()
+#history { padding-left: 20px; }
 
-    return jsonify({
-        "status": "success",
-        "message": "Message saved successfully!",
-        "user_message": message
-    })
+#history li {
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
 
+.history-message { white-space: pre-wrap; }
 
-# Get all saved messages
-@app.route("/api/messages", methods=["GET"])
-def get_messages():
-    connection = get_db_connection()
+@media(max-width: 600px) {
+    body { padding: 10px; }
+    .container { padding: 18px; }
+    .grid { grid-template-columns: 1fr; }
+    h1 { font-size: 30px; }
+}
+</style>
+</head>
 
-    rows = connection.execute(
-        """
-        SELECT id, message, created_at
-        FROM messages
-        ORDER BY id DESC
-        """
-    ).fetchall()
+<body>
+<main class="container">
 
-    connection.close()
+<h1>🗣️ AccessVoice</h1>
+<p>Your voice, your language, your message.</p>
 
-    return jsonify({
-        "status": "success",
-        "messages": [dict(row) for row in rows]
-    })
+<h2>🌐 Select Your Language</h2>
 
+<select id="language" onchange="changeLanguage()">
+    <option value="tanglish">Tanglish</option>
+    <option value="ta-IN">Tamil - தமிழ்</option>
+    <option value="en-IN">English</option>
+    <option value="te-IN">Telugu - తెలుగు</option>
+    <option value="ml-IN">Malayalam - മലയാളം</option>
+    <option value="hi-IN">Hindi - हिन्दी</option>
+</select>
 
-# Delete one message using its database ID
-@app.route("/api/messages/<int:message_id>", methods=["DELETE"])
-def delete_message(message_id):
-    connection = get_db_connection()
+<div class="message" id="message" aria-live="polite">
+    Unga message inga varum.
+</div>
 
-    cursor = connection.execute(
-        "DELETE FROM messages WHERE id = ?",
-        (message_id,)
-    )
+<h2>Quick Messages</h2>
 
-    connection.commit()
-    deleted_count = cursor.rowcount
-    connection.close()
+<div class="grid">
+    <button onclick="selectIntent('water')" id="waterBtn">💧 Enakku thanni venum.</button>
+    <button onclick="selectIntent('food')" id="foodBtn">🍎 Enakku saapadu venum.</button>
+    <button onclick="selectIntent('help')" id="helpBtn">🆘 Enakku udhavi venum.</button>
+    <button onclick="selectIntent('thanks')" id="thanksBtn">🙏 Nandri.</button>
+    <button onclick="selectIntent('happy')" id="happyBtn">😊 Naan santhoshama irukken.</button>
+    <button onclick="selectIntent('unwell')" id="unwellBtn">❤️ Enakku udambu sari illa.</button>
+</div>
 
-    if deleted_count == 0:
-        return jsonify({
-            "status": "error",
-            "message": "Message not found."
-        }), 404
+<h2>🎤 Voice Input</h2>
 
-    return jsonify({
-        "status": "success",
-        "message": "Message deleted successfully!"
-    })
+<button onclick="startListening()">🎤 Start Listening</button>
+<button onclick="stopListening()" class="red">⏹ Stop Listening</button>
 
+<h2>✍️ Type Your Message</h2>
 
-# Start the application
-if __name__ == "__main__":
-    create_table()
-    app.run(debug=True)
+<textarea id="customMessage"
+    maxlength="500"
+    placeholder="Type your message here..."></textarea>
+
+<button onclick="useCustomMessage()" class="purple">Save Message</button>
+<button onclick="speakMessage()" class="green">🔊 Speak Message</button>
+<button onclick="stopSpeaking()" class="red">Stop Voice</button>
+<button onclick="clearMessage()" class="grey">Clear Message</button>
+
+<h2>📋 Saved Messages</h2>
+
+<input id="search"
+       placeholder="Search saved messages..."
+       oninput="loadHistory()">
+
+<ul id="history"></ul>
+
+<button onclick="loadHistory()">Refresh Messages</button>
+
+<p id="status" role="status" aria-live="polite">
+    Select a language and start speaking.
+</p>
+
+</main>
+
+<script>
+const languageData = {
+    "tanglish": {
+        speech: "ta-IN",
+        water: "Enakku thanni venum.",
+        food: "Enakku saapadu venum.",
+        help: "Enakku udhavi venum.",
+        thanks: "Nandri.",
+        happy: "Naan santhoshama irukken.",
+        unwell: "Enakku udambu sari illa.",
+        initial: "Unga message inga varum.",
+        ready: "Ready. Tanglish select pannirukkinga.",
+        listening: "Listening... Please speak.",
+        placeholder: "Tanglish-la message type pannunga..."
+    },
+
+    "ta-IN": {
+        speech: "ta-IN",
+        water: "எனக்குத் தண்ணீர் வேண்டும்.",
+        food: "எனக்குச் சாப்பாடு வேண்டும்.",
+        help: "எனக்கு உதவி வேண்டும்.",
+        thanks: "நன்றி.",
+        happy: "நான் மகிழ்ச்சியாக இருக்கிறேன்.",
+        unwell: "எனக்கு உடல்நிலை சரியில்லை.",
+        initial: "உங்கள் செய்தி இங்கே தோன்றும்.",
+        ready: "Ready. Please speak in Tamil.",
+        listening: "Listening to Tamil...",
+        placeholder: "தமிழில் உங்கள் செய்தியை எழுதுங்கள்..."
+    },
+
+    "en-IN": {
+        speech: "en-IN",
+        water: "I need water.",
+        food: "I need food.",
+        help: "I need help.",
+        thanks: "Thank you.",
+        happy: "I am happy.",
+        unwell: "I am not feeling well.",
+        initial: "Your message will appear here.",
+        ready: "Ready. Please speak in English.",
+        listening: "Listening to English...",
+        placeholder: "Type your message here..."
+    },
+
+    "te-IN": {
+        speech: "te-IN",
+        water: "నాకు నీళ్లు కావాలి.",
+        food: "నాకు ఆహారం కావాలి.",
+        help: "నాకు సహాయం కావాలి.",
+        thanks: "ధన్యవాదాలు.",
+        happy: "నేను సంతోషంగా ఉన్నాను.",
+        unwell: "నాకు ఆరోగ్యం బాగోలేదు.",
+        initial: "మీ సందేశం ఇక్కడ కనిపిస్తుంది.",
+        ready: "Ready. Please speak in Telugu.",
+        listening: "Listening to Telugu...",
+        placeholder: "తెలుగులో మీ సందేశాన్ని టైప్ చేయండి..."
+    },
+
+    "ml-IN": {
+        speech: "ml-IN",
+        water: "എനിക്ക് വെള്ളം വേണം.",
+        food: "എനിക്ക് ഭക്ഷണം വേണം.",
+        help: "എനിക്ക് സഹായം വേണം.",
+        thanks: "നന്ദി.",
+        happy: "എനിക്ക് സന്തോഷമുണ്ട്.",
+        unwell: "എനിക്ക് സുഖമില്ല.",
+        initial: "നിങ്ങളുടെ സന്ദേശം ഇവിടെ കാണിക്കും.",
+        ready: "Ready. Please speak in Malayalam.",
+        listening: "Listening to Malayalam...",
+        placeholder: "മലയാളത്തിൽ സന്ദേശം ടൈപ്പ് ചെയ്യുക..."
+    },
+
+    "hi-IN": {
+        speech: "hi-IN",
+        water: "मुझे पानी चाहिए।",
+        food: "मुझे खाना चाहिए।",
+        help: "मुझे मदद चाहिए।",
+        thanks: "धन्यवाद।",
+        happy: "मैं खुश हूँ।",
+        unwell: "मेरी तबीयत ठीक नहीं है।",
+        initial: "आपका संदेश यहाँ दिखाई देगा।",
+        ready: "Ready. Please speak in Hindi.",
+        listening: "Listening to Hindi...",
+        placeholder: "हिंदी में अपना संदेश लिखें..."
+    }
+};
+
+let recognition = null;
+let isListening = false;
+let selectedMessage = "";
+let messageIsSet = false;
+
+function getLang() {
+    return document.getElementById("language").value;
+}
+
+function getData() {
+    return languageData[getLang()];
+}
+
+function setMessage(text) {
+    selectedMessage = text;
+    messageIsSet = true;
+    document.getElementById("message").textContent = text;
+    document.getElementById("customMessage").value = text;
+}
+
+function changeLanguage() {
+    const lang = getData();
+
+    const buttonMap = {
+        waterBtn: ["💧 ", "water"],
+        foodBtn: ["🍎 ", "food"],
+        helpBtn: ["🆘 ", "help"],
+        thanksBtn: ["🙏 ", "thanks"],
+        happyBtn: ["😊 ", "happy"],
+        unwellBtn: ["❤️ ", "unwell"]
+    };
+
+    Object.entries(buttonMap).forEach(([id, values]) => {
+        document.getElementById(id).textContent =
+            values[0] + lang[values[1]];
+    });
+
+    document.getElementById("customMessage").placeholder =
+        lang.placeholder;
+
+    if (!messageIsSet) {
+        document.getElementById("message").textContent = lang.initial;
+    }
+
+    document.getElementById("status").textContent = lang.ready;
+    loadHistory();
+}
+
+// Identify common requests and show them in the selected language.
+function detectIntent(text) {
+    const s = text.toLowerCase();
+
+    const patterns = {
+        water: [
+            "water", "thanni", "thanneer", "தண்ணி", "தண்ணீர்",
+            "నీళ్లు", "నీళ్ళు", "నీరు", "വെള്ളം", "पानी"
+        ],
+        food: [
+            "food", "hungry", "saapadu", "சாப்பாடு", "பசிக்குது",
+            "ఆహారం", "తిండి", "ഭക്ഷണം", "വിശക്കുന്നു", "खाना", "भूख"
+        ],
+        help: [
+            "help", "udhavi", "உதவி", "సహాయం", "സഹായം", "मदद"
+        ],
+        thanks: [
+            "thank you", "thanks", "nandri", "நன்றி",
+            "ధన్యవాద", "നന്ദി", "धन्यवाद"
+        ],
+        happy: [
+            "happy", "santhosham", "மகிழ்ச்சி", "సంతోష",
+            "സന്തോഷ", "खुश"
+        ],
+        unwell: [
+            "unwell", "sick", "உடல்நிலை சரியில்லை",
+            "சரியில்லை", "సుఖం లేదు", "സുഖമില്ല", "तबीयत"
+        ]
+    };
+
+    for (const intent in patterns) {
+        if (patterns[intent].some(word => s.includes(word))) {
+            return intent;
+        }
+    }
+
+    return null;
+}
+
+function startListening() {
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        document.getElementById("status").textContent =
+            "Speech recognition is not supported in this browser. Try Chrome.";
+        return;
+    }
+
+    if (isListening) return;
+
+    recognition = new SpeechRecognition();
+    recognition.lang = getData().speech;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function() {
+        isListening = true;
+        document.getElementById("status").textContent =
+            getData().listening;
+    };
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim();
+        const intent = detectIntent(transcript);
+
+        // Known requests use the selected language.
+        // Other speech remains the browser's recognized transcript.
+        const output = intent ? getData()[intent] : transcript;
+
+        setMessage(output);
+
+        document.getElementById("status").textContent =
+            "Recognized: " + transcript;
+    };
+
+    recognition.onerror = function(event) {
+        if (event.error === "not-allowed") {
+            document.getElementById("status").textContent =
+                "Please allow microphone access in your browser.";
+        } else if (event.error === "no-speech") {
+            document.getElementById("status").textContent =
+                "No speech detected. Please try again.";
+        } else {
+            document.getElementById("status").textContent =
+                "Voice recognition error: " + event.error;
+        }
+    };
+
+    recognition.onend = function() {
+        isListening = false;
+    };
+
+    try {
+        recognition.start();
+    } catch (error) {
+        isListening = false;
+        document.getElementById("status").textContent =
+            "Could not start voice recognition. Please try again.";
+    }
+}
+
+function stopListening() {
+    if (recognition && isListening) recognition.stop();
+    isListening = false;
+}
+
+function selectIntent(intent) {
+    const text = getData()[intent];
+    setMessage(text);
+    saveMessage(text);
+}
+
+async function useCustomMessage() {
+    const text = document.getElementById("customMessage").value.trim();
+
+    if (!text) {
+        document.getElementById("status").textContent =
+            "Please type a message first.";
+        return;
+    }
+
+    // Preserve exactly what the user typed; do not change its language.
+    setMessage(text);
+    await saveMessage(text);
+}
+
+async function saveMessage(message) {
+    try {
+        const response = await fetch("/api/message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                message: message,
+                language: getLang()
+            })
+        });
+
+        if (!response.ok) throw new Error("Save failed");
+
+        document.getElementById("status").textContent =
+            "Message saved successfully.";
+
+        await loadHistory();
+    } catch (error) {
+        document.getElementById("status").textContent =
+            "Could not save message. Check that app.py is running and /api/message exists.";
+    }
+}
+
+function speakMessage() {
+    const text =
+        document.getElementById("customMessage").value.trim()
+        || selectedMessage;
+
+    if (!text) {
+        document.getElementById("status").textContent =
+            "Please enter a message first.";
+        return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+        document.getElementById("status").textContent =
+            "Speech playback is not supported in this browser.";
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = getData().speech;
+    speech.rate = 0.9;
+
+    window.speechSynthesis.speak(speech);
+}
+
+function stopSpeaking() {
+    window.speechSynthesis.cancel();
+}
+
+function clearMessage() {
+    stopListening();
+    stopSpeaking();
+
+    selectedMessage = "";
+    messageIsSet = false;
+
+    document.getElementById("customMessage").value = "";
+    document.getElementById("message").textContent = getData().initial;
+    document.getElementById("status").textContent = getData().ready;
+}
+
+async function loadHistory() {
+    const list = document.getElementById("history");
+    const query = document.getElementById("search").value.toLowerCase();
+
+    try {
+        const response = await fetch("/api/messages");
+        if (!response.ok) throw new Error("Load failed");
+
+        const data = await response.json();
+        const messages = Array.isArray(data)
+            ? data
+            : (data.messages || []);
+
+        list.replaceChildren();
+
+        const filtered = messages.filter(item =>
+            String(item.message || item.text || "")
+                .toLowerCase().includes(query)
+        );
+
+        if (filtered.length === 0) {
+            const li = document.createElement("li");
+            li.textContent = "No saved messages.";
+            list.appendChild(li);
+            return;
+        }
+
+        filtered.forEach(item => {
+            const li = document.createElement("li");
+            const text = document.createElement("div");
+            const use = document.createElement("button");
+            const del = document.createElement("button");
+
+            const content = item.message || item.text || "";
+            text.className = "history-message";
+            text.textContent = content;
+
+            use.textContent = "Use Message";
+            use.onclick = () => setMessage(content);
+
+            del.textContent = "Delete";
+            del.className = "red";
+            del.onclick = async () => {
+                const id = item.id ?? item.message_id;
+
+                if (id == null) {
+                    document.getElementById("status").textContent =
+                        "Message ID is missing from the server response.";
+                    return;
+                }
+
+                if (!confirm("Are you sure you want to delete this message?")) {
+                    return;
+                }
+
+                try {
+                    const result = await fetch(
+                        "/api/messages/" + encodeURIComponent(id),
+                        { method: "DELETE" }
+                    );
+
+                    if (!result.ok) throw new Error("Delete failed");
+                    await loadHistory();
+                } catch (error) {
+                    document.getElementById("status").textContent =
+                        "Could not delete message. Check your Flask API.";
+                }
+            };
+
+            li.appendChild(text);
+            li.appendChild(use);
+            li.appendChild(del);
+            list.appendChild(li);
+        });
+    } catch (error) {
+        list.replaceChildren();
+        const li = document.createElement("li");
+        li.textContent =
+            "Unable to load messages. Check app.py and the /api/messages route.";
+        list.appendChild(li);
+    }
+}
+
+changeLanguage();
+</script>
+</body>
+</html>
