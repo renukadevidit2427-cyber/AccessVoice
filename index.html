@@ -1,379 +1,79 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AccessVoice | Your Voice, Your Choice</title>
+<label for="speechLanguage">Choose language</label>
+<select id="speechLanguage">
+  <option value="en-US">English</option>
+  <option value="ta-IN">தமிழ் (Tamil)</option>
+  <option value="hi-IN">हिन्दी (Hindi)</option>
+  <option value="te-IN">తెలుగు (Telugu)</option>
+  <option value="ml-IN">മലയാളം (Malayalam)</option>
+  <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+  <option value="fr-FR">Français (French)</option>
+  <option value="es-ES">Español (Spanish)</option>
+  <option value="de-DE">Deutsch (German)</option>
+  <option value="ja-JP">日本語 (Japanese)</option>
+  <option value="zh-CN">中文 (Chinese)</option>
+</select>
 
-<style>
-:root {
-  --primary: #3867e8;
-  --dark: #17233f;
-  --muted: #64748b;
-  --bg: #f4f7ff;
-  --white: #ffffff;
-}
+<label for="speechMessage">Your message</label>
+<textarea id="speechMessage"
+  placeholder="Type your message here"></textarea>
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+<button type="button" id="speakMessage">🔊 Speak</button>
+<button type="button" id="stopSpeech">⏹ Stop</button>
 
-body {
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--dark);
-  min-height: 100vh;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 22px 7%;
-  background: white;
-  border-bottom: 1px solid #e7ebf5;
-}
-
-.logo {
-  font-size: 25px;
-  font-weight: 800;
-  color: var(--primary);
-}
-
-.logo span {
-  color: var(--dark);
-}
-
-.language {
-  padding: 11px;
-  border: 1px solid #d8deec;
-  border-radius: 10px;
-  background: white;
-  font-size: 15px;
-}
-
-main {
-  max-width: 1100px;
-  margin: auto;
-  padding: 45px 20px;
-}
-
-.hero {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.tag {
-  display: inline-block;
-  background: #e4ebff;
-  color: #2853c7;
-  padding: 8px 14px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 18px;
-}
-
-h1 {
-  font-size: clamp(32px, 5vw, 48px);
-  line-height: 1.15;
-  margin-bottom: 15px;
-}
-
-.hero p {
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 17px;
-}
-
-.panel {
-  background: white;
-  max-width: 850px;
-  margin: auto;
-  padding: 28px;
-  border-radius: 24px;
-  box-shadow: 0 15px 45px #253d7010;
-  border: 1px solid #e8edfa;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-textarea {
-  width: 100%;
-  min-height: 130px;
-  resize: vertical;
-  padding: 17px;
-  border: 2px solid #dfe6f4;
-  border-radius: 14px;
-  font: inherit;
-  font-size: 17px;
-  outline: none;
-}
-
-textarea:focus {
-  border-color: var(--primary);
-}
-
-.quick-title {
-  margin: 24px 0 13px;
-  font-size: 15px;
-  color: var(--muted);
-}
-
-.quick-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.quick {
-  padding: 17px 8px;
-  background: #f7f9ff;
-  border: 1px solid #e0e7f5;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  color: var(--dark);
-  min-height: 78px;
-}
-
-.quick:hover,
-.quick:focus-visible {
-  background: #e8eeff;
-  border-color: var(--primary);
-}
-
-.quick span {
-  display: block;
-  font-size: 24px;
-  margin-bottom: 7px;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
-}
-
-button {
-  font: inherit;
-}
-
-.action {
-  flex: 1;
-  min-width: 160px;
-  border: 0;
-  border-radius: 13px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.primary {
-  background: var(--primary);
-  color: white;
-}
-
-.secondary {
-  background: #e9efff;
-  color: #254cb5;
-}
-
-.action:hover {
-  filter: brightness(.96);
-}
-
-.status {
-  margin-top: 18px;
-  min-height: 24px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.note {
-  margin-top: 25px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-footer {
-  text-align: center;
-  padding: 24px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-button:focus-visible,
-select:focus-visible {
-  outline: 3px solid #91adff;
-  outline-offset: 3px;
-}
-
-@media (max-width: 600px) {
-  header {
-    padding: 18px;
-  }
-
-  main {
-    padding: 30px 14px;
-  }
-
-  .panel {
-    padding: 19px;
-  }
-
-  .quick-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .hero p {
-    font-size: 15px;
-  }
-}
-</style>
-</head>
-
-<body>
-<header>
-  <div class="logo">✦ Access<span>Voice</span></div>
-
-  <label for="language" style="margin:0">
-    <select id="language" class="language" aria-label="Speech language">
-      <option value="en-US">English</option>
-      <option value="ta-IN">தமிழ்</option>
-    </select>
-  </label>
-</header>
-
-<main>
-  <section class="hero">
-    <div class="tag">ACCESSIBILITY • INDEPENDENCE • CONNECTION</div>
-    <h1>Your thoughts.<br>Your voice. Your choice.</h1>
-    <p>Express what you need with simple words, quick messages,<br>
-       and speech support — one step at a time.</p>
-  </section>
-
-  <section class="panel" aria-label="Communication panel">
-    <label for="message">What would you like to say?</label>
-
-    <textarea id="message"
-      placeholder="Type your message here..."
-      aria-describedby="status"></textarea>
-
-    <p class="quick-title">QUICK MESSAGES — tap to select</p>
-
-    <div class="quick-grid">
-      <button class="quick" data-en="I need water." data-ta="எனக்கு தண்ணீர் வேண்டும்.">
-        <span>💧</span>I need water
-      </button>
-
-      <button class="quick" data-en="I need food." data-ta="எனக்கு உணவு வேண்டும்.">
-        <span>🍎</span>I need food
-      </button>
-
-      <button class="quick" data-en="Please help me." data-ta="தயவுசெய்து எனக்கு உதவுங்கள்.">
-        <span>🤝</span>I need help
-      </button>
-
-      <button class="quick" data-en="I am not feeling well." data-ta="எனக்கு உடல்நிலை சரியில்லை.">
-        <span>💙</span>Not feeling well
-      </button>
-    </div>
-
-    <div class="actions">
-      <button class="action primary" id="speak">🔊 Speak Message</button>
-      <button class="action secondary" id="clear">✕ Clear</button>
-    </div>
-
-    <p class="status" id="status" role="status" aria-live="polite">
-      Ready when you are. Select a quick message or type your own.
-    </p>
-  </section>
-
-  <p class="note">
-    Designed to support communication. You can edit your message
-    before speaking it aloud.
-  </p>
-</main>
-
-<footer>© 2026 AccessVoice · Communication for everyone 💙</footer>
+<p id="speechStatus" role="status" aria-live="polite"></p>
 
 <script>
-const messageBox = document.getElementById("message");
-const language = document.getElementById("language");
-const statusText = document.getElementById("status");
+const languageSelect = document.getElementById("speechLanguage");
+const messageInput = document.getElementById("speechMessage");
+const status = document.getElementById("speechStatus");
 
-document.querySelectorAll(".quick").forEach(button => {
-  button.addEventListener("click", () => {
-    const text = language.value === "ta-IN"
-      ? button.dataset.ta
-      : button.dataset.en;
+document.getElementById("speakMessage").addEventListener("click", () => {
+  const message = messageInput.value.trim();
 
-    messageBox.value = text;
-    statusText.textContent = "Message selected. Press Speak Message to hear it.";
-  });
-});
-
-document.getElementById("speak").addEventListener("click", () => {
-  const text = messageBox.value.trim();
-
-  if (!text) {
-    statusText.textContent = "Please type a message or select a quick message.";
-    messageBox.focus();
+  if (!message) {
+    status.textContent = "Please type a message first.";
     return;
   }
 
   if (!("speechSynthesis" in window)) {
-    statusText.textContent = "Speech is not supported in this browser.";
+    status.textContent = "Speech is not supported in this browser.";
     return;
   }
 
   window.speechSynthesis.cancel();
 
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = language.value;
-  speech.rate = 0.9;
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = languageSelect.value;
 
-  speech.onstart = () => {
-    statusText.textContent = "Speaking your message...";
+  const voices = window.speechSynthesis.getVoices();
+  const matchingVoice = voices.find(
+    voice => voice.lang.toLowerCase() ===
+      languageSelect.value.toLowerCase()
+  );
+
+  if (matchingVoice) {
+    utterance.voice = matchingVoice;
+  }
+
+  utterance.onstart = () => {
+    status.textContent = "Speaking...";
   };
 
-  speech.onend = () => {
-    statusText.textContent = "Message spoken successfully.";
+  utterance.onend = () => {
+    status.textContent = "Finished speaking.";
   };
 
-  speech.onerror = () => {
-    statusText.textContent = "Speech could not play. Please try again.";
+  utterance.onerror = () => {
+    status.textContent =
+      "Speech failed. Check browser voice and language support.";
   };
 
-  window.speechSynthesis.speak(speech);
+  window.speechSynthesis.speak(utterance);
 });
 
-document.getElementById("clear").addEventListener("click", () => {
-  window.speechSynthesis?.cancel();
-  messageBox.value = "";
-  statusText.textContent = "Message cleared. Ready for a new message.";
-  messageBox.focus();
-});
-
-language.addEventListener("change", () => {
-  statusText.textContent = language.value === "ta-IN"
-    ? "Tamil selected. Choose a quick message or type Tamil text."
-    : "English selected. Choose a quick message or type your message.";
+document.getElementById("stopSpeech").addEventListener("click", () => {
+  window.speechSynthesis.cancel();
+  status.textContent = "Speech stopped.";
 });
 </script>
-</body>
-</html>
