@@ -4,588 +4,376 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AccessVoice</title>
+<title>AccessVoice | Your Voice, Your Choice</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    padding: 20px;
-    background: #eef5ff;
-    color: #172033;
-    font-family: Arial, sans-serif;
+:root {
+  --primary: #3867e8;
+  --dark: #17233f;
+  --muted: #64748b;
+  --bg: #f4f7ff;
+  --white: #ffffff;
 }
 
-.container {
-    max-width: 940px;
-    margin: auto;
-    padding: 30px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 5px 25px #0002;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 7%;
+  background: white;
+  border-bottom: 1px solid #e7ebf5;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.logo span {
+  color: var(--dark);
+}
+
+.language {
+  padding: 11px;
+  border: 1px solid #d8deec;
+  border-radius: 10px;
+  background: white;
+  font-size: 15px;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 45px 20px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.tag {
+  display: inline-block;
+  background: #e4ebff;
+  color: #2853c7;
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 18px;
 }
 
 h1 {
-    text-align: center;
-    color: #155e9b;
-    font-size: 38px;
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.15;
+  margin-bottom: 15px;
 }
 
-h2 { color: #155e9b; margin-top: 26px; }
-
-select, textarea, input, button {
-    width: 100%;
-    padding: 13px;
-    margin-top: 10px;
-    border-radius: 9px;
-    font-size: 16px;
+.hero p {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 17px;
 }
 
-select, textarea, input {
-    border: 1px solid #bbb;
-    background: white;
-    color: #172033;
+.panel {
+  background: white;
+  max-width: 850px;
+  margin: auto;
+  padding: 28px;
+  border-radius: 24px;
+  box-shadow: 0 15px 45px #253d7010;
+  border: 1px solid #e8edfa;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12px;
 }
 
 textarea {
-    min-height: 110px;
-    resize: vertical;
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  padding: 17px;
+  border: 2px solid #dfe6f4;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 17px;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--primary);
+}
+
+.quick-title {
+  margin: 24px 0 13px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.quick {
+  padding: 17px 8px;
+  background: #f7f9ff;
+  border: 1px solid #e0e7f5;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--dark);
+  min-height: 78px;
+}
+
+.quick:hover,
+.quick:focus-visible {
+  background: #e8eeff;
+  border-color: var(--primary);
+}
+
+.quick span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 7px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
 }
 
 button {
-    border: none;
-    background: #1976c9;
-    color: white;
-    cursor: pointer;
+  font: inherit;
 }
 
-button:hover { opacity: .88; }
-
-.message {
-    margin: 20px 0;
-    padding: 22px;
-    min-height: 85px;
-    background: #e0f2fe;
-    color: #075985;
-    border-radius: 12px;
-    font-size: 24px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
+.action {
+  flex: 1;
+  min-width: 160px;
+  border: 0;
+  border-radius: 13px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+.primary {
+  background: var(--primary);
+  color: white;
 }
 
-.green { background: #16834a; }
-.purple { background: #7048b8; }
-.red { background: #dc3545; }
-.grey { background: #555; }
-
-#status {
-    margin-top: 20px;
-    text-align: center;
-    overflow-wrap: anywhere;
-    line-height: 1.5;
+.secondary {
+  background: #e9efff;
+  color: #254cb5;
 }
 
-#history { padding-left: 20px; }
-
-#history li {
-    margin: 12px 0;
-    overflow-wrap: anywhere;
+.action:hover {
+  filter: brightness(.96);
 }
 
-.history-message { white-space: pre-wrap; }
+.status {
+  margin-top: 18px;
+  min-height: 24px;
+  color: var(--muted);
+  line-height: 1.5;
+}
 
-@media(max-width: 600px) {
-    body { padding: 10px; }
-    .container { padding: 18px; }
-    .grid { grid-template-columns: 1fr; }
-    h1 { font-size: 30px; }
+.note {
+  margin-top: 25px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid #91adff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  header {
+    padding: 18px;
+  }
+
+  main {
+    padding: 30px 14px;
+  }
+
+  .panel {
+    padding: 19px;
+  }
+
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
 }
 </style>
 </head>
 
 <body>
-<main class="container">
+<header>
+  <div class="logo">✦ Access<span>Voice</span></div>
 
-<h1>🗣️ AccessVoice</h1>
-<p>Your voice, your language, your message.</p>
+  <label for="language" style="margin:0">
+    <select id="language" class="language" aria-label="Speech language">
+      <option value="en-US">English</option>
+      <option value="ta-IN">தமிழ்</option>
+    </select>
+  </label>
+</header>
 
-<h2>🌐 Select Your Language</h2>
+<main>
+  <section class="hero">
+    <div class="tag">ACCESSIBILITY • INDEPENDENCE • CONNECTION</div>
+    <h1>Your thoughts.<br>Your voice. Your choice.</h1>
+    <p>Express what you need with simple words, quick messages,<br>
+       and speech support — one step at a time.</p>
+  </section>
 
-<select id="language" onchange="changeLanguage()">
-    <option value="tanglish">Tanglish</option>
-    <option value="ta-IN">Tamil - தமிழ்</option>
-    <option value="en-IN">English</option>
-    <option value="te-IN">Telugu - తెలుగు</option>
-    <option value="ml-IN">Malayalam - മലയാളം</option>
-    <option value="hi-IN">Hindi - हिन्दी</option>
-</select>
+  <section class="panel" aria-label="Communication panel">
+    <label for="message">What would you like to say?</label>
 
-<div class="message" id="message" aria-live="polite">
-    Unga message inga varum.
-</div>
+    <textarea id="message"
+      placeholder="Type your message here..."
+      aria-describedby="status"></textarea>
 
-<h2>Quick Messages</h2>
+    <p class="quick-title">QUICK MESSAGES — tap to select</p>
 
-<div class="grid">
-    <button onclick="selectIntent('water')" id="waterBtn">💧 Enakku thanni venum.</button>
-    <button onclick="selectIntent('food')" id="foodBtn">🍎 Enakku saapadu venum.</button>
-    <button onclick="selectIntent('help')" id="helpBtn">🆘 Enakku udhavi venum.</button>
-    <button onclick="selectIntent('thanks')" id="thanksBtn">🙏 Nandri.</button>
-    <button onclick="selectIntent('happy')" id="happyBtn">😊 Naan santhoshama irukken.</button>
-    <button onclick="selectIntent('unwell')" id="unwellBtn">❤️ Enakku udambu sari illa.</button>
-</div>
+    <div class="quick-grid">
+      <button class="quick" data-en="I need water." data-ta="எனக்கு தண்ணீர் வேண்டும்.">
+        <span>💧</span>I need water
+      </button>
 
-<h2>🎤 Voice Input</h2>
+      <button class="quick" data-en="I need food." data-ta="எனக்கு உணவு வேண்டும்.">
+        <span>🍎</span>I need food
+      </button>
 
-<button onclick="startListening()">🎤 Start Listening</button>
-<button onclick="stopListening()" class="red">⏹ Stop Listening</button>
+      <button class="quick" data-en="Please help me." data-ta="தயவுசெய்து எனக்கு உதவுங்கள்.">
+        <span>🤝</span>I need help
+      </button>
 
-<h2>✍️ Type Your Message</h2>
+      <button class="quick" data-en="I am not feeling well." data-ta="எனக்கு உடல்நிலை சரியில்லை.">
+        <span>💙</span>Not feeling well
+      </button>
+    </div>
 
-<textarea id="customMessage"
-    maxlength="500"
-    placeholder="Type your message here..."></textarea>
+    <div class="actions">
+      <button class="action primary" id="speak">🔊 Speak Message</button>
+      <button class="action secondary" id="clear">✕ Clear</button>
+    </div>
 
-<button onclick="useCustomMessage()" class="purple">Save Message</button>
-<button onclick="speakMessage()" class="green">🔊 Speak Message</button>
-<button onclick="stopSpeaking()" class="red">Stop Voice</button>
-<button onclick="clearMessage()" class="grey">Clear Message</button>
+    <p class="status" id="status" role="status" aria-live="polite">
+      Ready when you are. Select a quick message or type your own.
+    </p>
+  </section>
 
-<h2>📋 Saved Messages</h2>
-
-<input id="search"
-       placeholder="Search saved messages..."
-       oninput="loadHistory()">
-
-<ul id="history"></ul>
-
-<button onclick="loadHistory()">Refresh Messages</button>
-
-<p id="status" role="status" aria-live="polite">
-    Select a language and start speaking.
-</p>
-
+  <p class="note">
+    Designed to support communication. You can edit your message
+    before speaking it aloud.
+  </p>
 </main>
 
+<footer>© 2026 AccessVoice · Communication for everyone 💙</footer>
+
 <script>
-const languageData = {
-    "tanglish": {
-        speech: "ta-IN",
-        water: "Enakku thanni venum.",
-        food: "Enakku saapadu venum.",
-        help: "Enakku udhavi venum.",
-        thanks: "Nandri.",
-        happy: "Naan santhoshama irukken.",
-        unwell: "Enakku udambu sari illa.",
-        initial: "Unga message inga varum.",
-        ready: "Ready. Tanglish select pannirukkinga.",
-        listening: "Listening... Please speak.",
-        placeholder: "Tanglish-la message type pannunga..."
-    },
-
-    "ta-IN": {
-        speech: "ta-IN",
-        water: "எனக்குத் தண்ணீர் வேண்டும்.",
-        food: "எனக்குச் சாப்பாடு வேண்டும்.",
-        help: "எனக்கு உதவி வேண்டும்.",
-        thanks: "நன்றி.",
-        happy: "நான் மகிழ்ச்சியாக இருக்கிறேன்.",
-        unwell: "எனக்கு உடல்நிலை சரியில்லை.",
-        initial: "உங்கள் செய்தி இங்கே தோன்றும்.",
-        ready: "Ready. Please speak in Tamil.",
-        listening: "Listening to Tamil...",
-        placeholder: "தமிழில் உங்கள் செய்தியை எழுதுங்கள்..."
-    },
-
-    "en-IN": {
-        speech: "en-IN",
-        water: "I need water.",
-        food: "I need food.",
-        help: "I need help.",
-        thanks: "Thank you.",
-        happy: "I am happy.",
-        unwell: "I am not feeling well.",
-        initial: "Your message will appear here.",
-        ready: "Ready. Please speak in English.",
-        listening: "Listening to English...",
-        placeholder: "Type your message here..."
-    },
-
-    "te-IN": {
-        speech: "te-IN",
-        water: "నాకు నీళ్లు కావాలి.",
-        food: "నాకు ఆహారం కావాలి.",
-        help: "నాకు సహాయం కావాలి.",
-        thanks: "ధన్యవాదాలు.",
-        happy: "నేను సంతోషంగా ఉన్నాను.",
-        unwell: "నాకు ఆరోగ్యం బాగోలేదు.",
-        initial: "మీ సందేశం ఇక్కడ కనిపిస్తుంది.",
-        ready: "Ready. Please speak in Telugu.",
-        listening: "Listening to Telugu...",
-        placeholder: "తెలుగులో మీ సందేశాన్ని టైప్ చేయండి..."
-    },
-
-    "ml-IN": {
-        speech: "ml-IN",
-        water: "എനിക്ക് വെള്ളം വേണം.",
-        food: "എനിക്ക് ഭക്ഷണം വേണം.",
-        help: "എനിക്ക് സഹായം വേണം.",
-        thanks: "നന്ദി.",
-        happy: "എനിക്ക് സന്തോഷമുണ്ട്.",
-        unwell: "എനിക്ക് സുഖമില്ല.",
-        initial: "നിങ്ങളുടെ സന്ദേശം ഇവിടെ കാണിക്കും.",
-        ready: "Ready. Please speak in Malayalam.",
-        listening: "Listening to Malayalam...",
-        placeholder: "മലയാളത്തിൽ സന്ദേശം ടൈപ്പ് ചെയ്യുക..."
-    },
-
-    "hi-IN": {
-        speech: "hi-IN",
-        water: "मुझे पानी चाहिए।",
-        food: "मुझे खाना चाहिए।",
-        help: "मुझे मदद चाहिए।",
-        thanks: "धन्यवाद।",
-        happy: "मैं खुश हूँ।",
-        unwell: "मेरी तबीयत ठीक नहीं है।",
-        initial: "आपका संदेश यहाँ दिखाई देगा।",
-        ready: "Ready. Please speak in Hindi.",
-        listening: "Listening to Hindi...",
-        placeholder: "हिंदी में अपना संदेश लिखें..."
-    }
-};
-
-let recognition = null;
-let isListening = false;
-let selectedMessage = "";
-let messageIsSet = false;
-
-function getLang() {
-    return document.getElementById("language").value;
-}
-
-function getData() {
-    return languageData[getLang()];
-}
-
-function setMessage(text) {
-    selectedMessage = text;
-    messageIsSet = true;
-    document.getElementById("message").textContent = text;
-    document.getElementById("customMessage").value = text;
-}
-
-function changeLanguage() {
-    const lang = getData();
-
-    const buttonMap = {
-        waterBtn: ["💧 ", "water"],
-        foodBtn: ["🍎 ", "food"],
-        helpBtn: ["🆘 ", "help"],
-        thanksBtn: ["🙏 ", "thanks"],
-        happyBtn: ["😊 ", "happy"],
-        unwellBtn: ["❤️ ", "unwell"]
-    };
-
-    Object.entries(buttonMap).forEach(([id, values]) => {
-        document.getElementById(id).textContent =
-            values[0] + lang[values[1]];
-    });
-
-    document.getElementById("customMessage").placeholder =
-        lang.placeholder;
-
-    if (!messageIsSet) {
-        document.getElementById("message").textContent = lang.initial;
-    }
-
-    document.getElementById("status").textContent = lang.ready;
-    loadHistory();
-}
-
-// Identify common requests and show them in the selected language.
-function detectIntent(text) {
-    const s = text.toLowerCase();
-
-    const patterns = {
-        water: [
-            "water", "thanni", "thanneer", "தண்ணி", "தண்ணீர்",
-            "నీళ్లు", "నీళ్ళు", "నీరు", "വെള്ളം", "पानी"
-        ],
-        food: [
-            "food", "hungry", "saapadu", "சாப்பாடு", "பசிக்குது",
-            "ఆహారం", "తిండి", "ഭക്ഷണം", "വിശക്കുന്നു", "खाना", "भूख"
-        ],
-        help: [
-            "help", "udhavi", "உதவி", "సహాయం", "സഹായം", "मदद"
-        ],
-        thanks: [
-            "thank you", "thanks", "nandri", "நன்றி",
-            "ధన్యవాద", "നന്ദി", "धन्यवाद"
-        ],
-        happy: [
-            "happy", "santhosham", "மகிழ்ச்சி", "సంతోష",
-            "സന്തോഷ", "खुश"
-        ],
-        unwell: [
-            "unwell", "sick", "உடல்நிலை சரியில்லை",
-            "சரியில்லை", "సుఖం లేదు", "സുഖമില്ല", "तबीयत"
-        ]
-    };
-
-    for (const intent in patterns) {
-        if (patterns[intent].some(word => s.includes(word))) {
-            return intent;
-        }
-    }
-
-    return null;
-}
-
-function startListening() {
-    const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-        document.getElementById("status").textContent =
-            "Speech recognition is not supported in this browser. Try Chrome.";
-        return;
-    }
-
-    if (isListening) return;
-
-    recognition = new SpeechRecognition();
-    recognition.lang = getData().speech;
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = function() {
-        isListening = true;
-        document.getElementById("status").textContent =
-            getData().listening;
-    };
-
-    recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim();
-        const intent = detectIntent(transcript);
-
-        // Known requests use the selected language.
-        // Other speech remains the browser's recognized transcript.
-        const output = intent ? getData()[intent] : transcript;
-
-        setMessage(output);
-
-        document.getElementById("status").textContent =
-            "Recognized: " + transcript;
-    };
-
-    recognition.onerror = function(event) {
-        if (event.error === "not-allowed") {
-            document.getElementById("status").textContent =
-                "Please allow microphone access in your browser.";
-        } else if (event.error === "no-speech") {
-            document.getElementById("status").textContent =
-                "No speech detected. Please try again.";
-        } else {
-            document.getElementById("status").textContent =
-                "Voice recognition error: " + event.error;
-        }
-    };
-
-    recognition.onend = function() {
-        isListening = false;
-    };
-
-    try {
-        recognition.start();
-    } catch (error) {
-        isListening = false;
-        document.getElementById("status").textContent =
-            "Could not start voice recognition. Please try again.";
-    }
-}
-
-function stopListening() {
-    if (recognition && isListening) recognition.stop();
-    isListening = false;
-}
-
-function selectIntent(intent) {
-    const text = getData()[intent];
-    setMessage(text);
-    saveMessage(text);
-}
-
-async function useCustomMessage() {
-    const text = document.getElementById("customMessage").value.trim();
-
-    if (!text) {
-        document.getElementById("status").textContent =
-            "Please type a message first.";
-        return;
-    }
-
-    // Preserve exactly what the user typed; do not change its language.
-    setMessage(text);
-    await saveMessage(text);
-}
-
-async function saveMessage(message) {
-    try {
-        const response = await fetch("/api/message", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                message: message,
-                language: getLang()
-            })
-        });
-
-        if (!response.ok) throw new Error("Save failed");
-
-        document.getElementById("status").textContent =
-            "Message saved successfully.";
-
-        await loadHistory();
-    } catch (error) {
-        document.getElementById("status").textContent =
-            "Could not save message. Check that app.py is running and /api/message exists.";
-    }
-}
-
-function speakMessage() {
-    const text =
-        document.getElementById("customMessage").value.trim()
-        || selectedMessage;
-
-    if (!text) {
-        document.getElementById("status").textContent =
-            "Please enter a message first.";
-        return;
-    }
-
-    if (!("speechSynthesis" in window)) {
-        document.getElementById("status").textContent =
-            "Speech playback is not supported in this browser.";
-        return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = getData().speech;
-    speech.rate = 0.9;
-
-    window.speechSynthesis.speak(speech);
-}
-
-function stopSpeaking() {
-    window.speechSynthesis.cancel();
-}
-
-function clearMessage() {
-    stopListening();
-    stopSpeaking();
-
-    selectedMessage = "";
-    messageIsSet = false;
-
-    document.getElementById("customMessage").value = "";
-    document.getElementById("message").textContent = getData().initial;
-    document.getElementById("status").textContent = getData().ready;
-}
-
-async function loadHistory() {
-    const list = document.getElementById("history");
-    const query = document.getElementById("search").value.toLowerCase();
-
-    try {
-        const response = await fetch("/api/messages");
-        if (!response.ok) throw new Error("Load failed");
-
-        const data = await response.json();
-        const messages = Array.isArray(data)
-            ? data
-            : (data.messages || []);
-
-        list.replaceChildren();
-
-        const filtered = messages.filter(item =>
-            String(item.message || item.text || "")
-                .toLowerCase().includes(query)
-        );
-
-        if (filtered.length === 0) {
-            const li = document.createElement("li");
-            li.textContent = "No saved messages.";
-            list.appendChild(li);
-            return;
-        }
-
-        filtered.forEach(item => {
-            const li = document.createElement("li");
-            const text = document.createElement("div");
-            const use = document.createElement("button");
-            const del = document.createElement("button");
-
-            const content = item.message || item.text || "";
-            text.className = "history-message";
-            text.textContent = content;
-
-            use.textContent = "Use Message";
-            use.onclick = () => setMessage(content);
-
-            del.textContent = "Delete";
-            del.className = "red";
-            del.onclick = async () => {
-                const id = item.id ?? item.message_id;
-
-                if (id == null) {
-                    document.getElementById("status").textContent =
-                        "Message ID is missing from the server response.";
-                    return;
-                }
-
-                if (!confirm("Are you sure you want to delete this message?")) {
-                    return;
-                }
-
-                try {
-                    const result = await fetch(
-                        "/api/messages/" + encodeURIComponent(id),
-                        { method: "DELETE" }
-                    );
-
-                    if (!result.ok) throw new Error("Delete failed");
-                    await loadHistory();
-                } catch (error) {
-                    document.getElementById("status").textContent =
-                        "Could not delete message. Check your Flask API.";
-                }
-            };
-
-            li.appendChild(text);
-            li.appendChild(use);
-            li.appendChild(del);
-            list.appendChild(li);
-        });
-    } catch (error) {
-        list.replaceChildren();
-        const li = document.createElement("li");
-        li.textContent =
-            "Unable to load messages. Check app.py and the /api/messages route.";
-        list.appendChild(li);
-    }
-}
-
-changeLanguage();
+const messageBox = document.getElementById("message");
+const language = document.getElementById("language");
+const statusText = document.getElementById("status");
+
+document.querySelectorAll(".quick").forEach(button => {
+  button.addEventListener("click", () => {
+    const text = language.value === "ta-IN"
+      ? button.dataset.ta
+      : button.dataset.en;
+
+    messageBox.value = text;
+    statusText.textContent = "Message selected. Press Speak Message to hear it.";
+  });
+});
+
+document.getElementById("speak").addEventListener("click", () => {
+  const text = messageBox.value.trim();
+
+  if (!text) {
+    statusText.textContent = "Please type a message or select a quick message.";
+    messageBox.focus();
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    statusText.textContent = "Speech is not supported in this browser.";
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = language.value;
+  speech.rate = 0.9;
+
+  speech.onstart = () => {
+    statusText.textContent = "Speaking your message...";
+  };
+
+  speech.onend = () => {
+    statusText.textContent = "Message spoken successfully.";
+  };
+
+  speech.onerror = () => {
+    statusText.textContent = "Speech could not play. Please try again.";
+  };
+
+  window.speechSynthesis.speak(speech);
+});
+
+document.getElementById("clear").addEventListener("click", () => {
+  window.speechSynthesis?.cancel();
+  messageBox.value = "";
+  statusText.textContent = "Message cleared. Ready for a new message.";
+  messageBox.focus();
+});
+
+language.addEventListener("change", () => {
+  statusText.textContent = language.value === "ta-IN"
+    ? "Tamil selected. Choose a quick message or type Tamil text."
+    : "English selected. Choose a quick message or type your message.";
+});
 </script>
 </body>
 </html>
